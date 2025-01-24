@@ -11,22 +11,18 @@ def reveal_file(file_path):
         elif platform.system() == "Windows":
             subprocess.run(["explorer", "/select", file_path])
         else:
-            print("File reveal functionality not supported on this operating system.")
+            print("File reveal functionality not supported in this operating system.")
     except Exception as e:
         print(f"Error revealing file: {e}")
 
 def sanitize(filename):
     return re.sub(r'[\\/*?:"<>|]', "", filename).strip().rstrip('.')
 
-def mp3_converter(video_url, playlist="music playlist"):
-    if not os.path.exists(playlist):
-        try:
-            os.path.exists(playlist)
-        except OSError as ose:
-            print(f"Error creating directory: {ose}")
-            return
-    
+def mp3_converter(video_url, playlist="music_playlist"):
     try:
+        if not os.path.exists(playlist):
+            os.makedirs(playlist)
+
         ydl_opts = {
             'format': 'bestaudio/best',
             'outtmpl': os.path.join(playlist, '%(title)s.%(ext)s'),
@@ -40,14 +36,13 @@ def mp3_converter(video_url, playlist="music playlist"):
         with YoutubeDL(ydl_opts) as ydl:
             info_dict = ydl.extract_info(video_url, download=True)
             video_title = sanitize(info_dict.get('title', 'Untitled'))
-            mp3_file_path = os.path.join(playlist, f"{video_title}.mp3")
+            mp3_file_path = os.path.join(playlist, f'{video_title}.mp3')
             print(f"Downloaded: {mp3_file_path}")
 
             reveal_file(mp3_file_path)
-            
     except Exception as e:
-        print(f"Error downloading file:c {e}")
+        print(f"Error downloading file: {e}")
 
 if __name__ == '__main__':
     video_url = input("Enter video url: ")
-    mp3_converter(video_url) 
+    mp3_converter(video_url)

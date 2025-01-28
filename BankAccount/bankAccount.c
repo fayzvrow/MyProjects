@@ -11,7 +11,7 @@
 struct BankAccount {
     char accountHolder[100];
     int accountNumber;
-    int pin;
+    int PIN;
     float balance;
 };
 
@@ -76,18 +76,28 @@ void createAccount(struct BankAccount accounts[], int *numAccounts) {
         
         accounts[*numAccounts].accountNumber = accountNumber;
 
-        int pin;
+        int PIN, confirmPIN;
         do {
-            printf("Set a 4-digit pin: ");
-            if (scanf("%d", &pin) != 1 || pin < PIN_MIN || pin > PIN_MAX) {
-                printf("Invalid pin. Please enter a valid 4-digit pin.\n");
+            printf("Set a 4-digit PIN: ");
+            if (scanf("%d", &PIN) != 1 || PIN < PIN_MIN || PIN > PIN_MAX) {
+                printf("Invalid PIN. Please enter a valid 4-digit PIN.\n");
                 clearInputBuffer();
+                continue;
+            }
+            printf("Confirm 4-digit PIN: ");
+            if (scanf("%d", &confirmPIN) != 1 || confirmPIN < PIN_MIN || confirmPIN > PIN_MAX) {
+                printf("Invalid PIN. Please enter a valid 4-digit PIN.\n");
+                clearInputBuffer();
+                continue;
+            }
+            if (PIN != confirmPIN) {
+                printf("PINs do not match. Please try again.\n");
                 continue;
             }
             break;
         } while (1);
 
-        accounts[*numAccounts].pin = pin;
+        accounts[*numAccounts].PIN = PIN;
 
         accounts[*numAccounts].balance = 0.0;
         (*numAccounts)++;
@@ -101,11 +111,11 @@ int verifyPIN(int accountNumber, struct BankAccount accounts[], int numAccounts)
     for (int i = 0; i < numAccounts; i++) {
         if (accounts[i].accountNumber == accountNumber) {
             printf("Enter 4-digit pin: ");
-            int pin;
-            if (scanf("%d", &pin) != 1 || pin < PIN_MIN || pin > PIN_MAX) {
+            int PIN;
+            if (scanf("%d", &PIN) != 1 || PIN < PIN_MIN || PIN > PIN_MAX) {
                 printf("Invalid pin format. Access denied!\n");
             }
-            if (accounts[i].pin == pin) {
+            if (accounts[i].PIN == PIN) {
                 return i;
             }
             printf("Invalid pin. Access denied!\n");
@@ -231,7 +241,7 @@ void changePIN(struct BankAccount accounts[], int numAccounts) {
         break;
     } while (1);
 
-    accounts[accountIndex].pin = newPIN;
+    accounts[accountIndex].PIN = newPIN;
     printf("PIN successfully changed.\n");
 }
 

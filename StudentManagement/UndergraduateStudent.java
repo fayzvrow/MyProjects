@@ -1,10 +1,10 @@
 public class UndergraduateStudent extends Student
 {
     public static final double UNDERGRAD_TUITION = 4000;
-	  public static final String UND_CLASSIFY = "Undergraduate";
+    public static final String UND_CLASSIFY = "Undergraduate";
     public UndergraduateStudent(int pID, String pName)
     {
-		super(pID, pName);
+	super(pID, pName);
         setTuition();
         setClassification();
     }

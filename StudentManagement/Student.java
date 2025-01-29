@@ -3,7 +3,7 @@ public abstract class Student
     private int ID;
     private String lastName;
     protected double tuition;
-	  protected String classification;
+    protected String classification;
 	
     public Student(int pID, String pName)
     {
@@ -34,6 +34,6 @@ public abstract class Student
     {
         return this.classification;
     }
-  public abstract void setTuition();
-	public abstract void setClassification();
+    public abstract void setTuition();
+    public abstract void setClassification();
 }

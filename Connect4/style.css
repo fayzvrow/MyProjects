@@ -1,0 +1,60 @@
+body {
+    background-color: lightgray;
+    text-align: center;
+    font-family: 'comic sans ms', cursive;
+}
+h1 {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    color: #333;
+    font-size: 2.5em;
+}
+#game-board {
+    display: grid;
+    grid-template-columns: repeat(7, 90px);
+    grid-template-rows: repeat(6, 90px);
+    background-color: blue;
+    width: max-content;
+    margin: 20px auto;
+    border: 5px solid blue;
+    border-radius: 5px;
+    box-shadow: 1px 1px 10px rgb(0, 0, 200);
+}
+.cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 6px solid blue;
+    border-radius: 70px;
+    background-color: lightgray;
+    color: #333;
+    cursor: pointer;
+}
+.cell.taken {
+    cursor: not-allowed;
+}
+#winner-message {
+    color: green;
+    font-weight: bold;
+    font-size: 2em;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+#restart-button  {
+    padding: 10px 20px;
+    margin-top: 10px;
+    background-color: rgb(255, 70, 70);
+    border: 5px solid rgb(255, 70, 70);
+    border-radius: 5px;
+    box-shadow: 1px 1px 10px rgb(255, 70, 70);
+    width: max-content;
+    font-size: 20px;
+    font-family: arial, sans-serif;
+    color: #333;
+    cursor: pointer;
+}
+#restart-button:hover {
+    border: 5px solid red;
+    box-shadow: 1px 1px 10px red;
+    background-color: red;
+}

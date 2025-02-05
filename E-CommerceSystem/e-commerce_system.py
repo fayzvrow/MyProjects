@@ -6,25 +6,23 @@ class Product:
     self.stock = stock
 
   def __str__(self):
-    return f"{self.name} - ${self.price} - ({self.category}) - Stock: {self.stock}"
+    return f"{self.name} - ${self.price} ({self.category}) - Stock: {self.stock}"
 
 class Cart:
   def __init__(self):
     self.items = []
 
-  def add_product(self, product, quantity):
+  def add_item(self, product, quantity):
     if product.stock >= quantity:
-      self.items.append((product, quantity))
       product.stock -= quantity
+      self.items.append((product, quantity))
       print(f"Added {quantity} of {product.name} to the cart.")
-    else:
-      print(f"Not enough stock for {product.name}")
 
   def view_cart(self):
     print("\nCart Items: ")
     total = 0
     for product, quantity in self.items:
-      print(f"{product.name} ({quantity}) - ${product.price * quantity}")
+      print(f"{product.name} ({product.price}) - ${product.price * quantity}")
       total += product.price * quantity
     print(f"Total: ${total}")
 
@@ -38,15 +36,15 @@ class User:
     self.cart = Cart()
 
   def __str__(self):
-    return f"User: {self.username}"
+    return f"\nUser: {self.username}"
 
 class Store:
   def __init__(self):
     self.products = []
 
   def add_product(self, product):
-    self.products.append(product)
-    print(f"Added product: {product.name}")
+      self.products.append(product)
+      print(f"Added product: {product.name}")
 
   def list_products(self):
     print("\nAvailable Products: ")
@@ -54,19 +52,28 @@ class Store:
       print(product)
     print("")
 
+
 store = Store()
 
-store.add_product(Product("Macbook Air", 1000, "Electronics", 10))
-store.add_product(Product("iPhone 16", 700, "Electronics", 15))
-store.add_product(Product("AirPods Pro", 100, "Electronics", 50))
+store.add_product(Product("Macbook Air", 1000, "Electronics", 7))
+store.add_product(Product("iPhone 16", 800, "Electronics", 10))
+store.add_product(Product("AirPods Pro", 200, "Electronics", 50))
 
-user = User("Faysal")
+user = User("Fayz")
 print(user)
 
 store.list_products()
-user.cart.add_product(store.products[1], 2)
-user.cart.add_product(store.products[2], 1)
-user.cart.view_cart()
 
+p1 = int(input("Enter the product you want: "))
+q1 = int(input("How many would you like?: "))
+
+p2 = int(input("Enter the product you want: "))
+q2 = int(input("How many would you like?: "))
+
+user.cart.add_item(store.products[p1], q1)
+user.cart.add_item(store.products[p2], q2)
+
+user.cart.view_cart()
 user.cart.checkout()
+
 store.list_products()

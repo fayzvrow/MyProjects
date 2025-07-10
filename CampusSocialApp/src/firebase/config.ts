@@ -3,10 +3,10 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
-// Firebase configuration
-// NOTE: Replace these with your actual Firebase config values
+// TODO: Replace these with your actual Firebase config values from Firebase Console
+// Go to Project Settings > General > Your apps > Web app > Config
 const firebaseConfig = {
-  apiKey: "your-api-key",
+  apiKey: "your-api-key-here",
   authDomain: "your-project-id.firebaseapp.com",
   projectId: "your-project-id",
   storageBucket: "your-project-id.appspot.com",

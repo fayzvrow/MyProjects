@@ -1,9 +1,12 @@
 const cells = document.querySelectorAll('[data-cell]');
-const winnerMessage = document.getElementById('winner-message');
-const restartButton = document.getElementById('restart-button');
+const playerName = document.getElementById("player-name");
+const playerCircle = document.getElementById("player-circle");
+const winnerMessage = document.getElementById("winner-message");
+const restartButton = document.getElementById("restart-button");
+const turnIndicator = document.getElementById("turn-indicator");
 
-let currentPlayer = 'Red';
-let gameActive = true;
+currentPlayer = 'Red';
+gameActive = true;
 const board = Array(42).fill(null);
 
 const winningCombinations = [
@@ -19,15 +22,14 @@ const winningCombinations = [
     [2, 9, 16, 23], [9, 16, 23, 30], [16, 23, 30, 37],
     [3, 10, 17, 24], [10, 17, 24, 31], [17, 24, 31, 38],
     [4, 11, 18, 25], [11, 18, 25, 32], [18, 25, 32, 39],
-    [5, 12, 19, 26], [12, 19, 27, 33], [19, 27, 33, 40],
+    [5, 12, 19, 26], [12, 19, 26, 33], [19, 26, 33, 40],
     [6, 13, 20, 27], [13, 20, 27, 34], [20, 27, 34, 41],
 
-    [14, 22, 30, 38], [7, 15, 23, 31], [15, 23, 31, 39], [0, 8, 16, 24], [8, 16, 24, 32], [16, 24, 32, 40],
-    [1, 9, 17, 25], [9, 17, 25, 33], [17, 25, 33, 41], [2, 10, 18, 26], [10, 18, 26, 34], [3, 11, 19, 27],
-
-    [20, 26, 32, 38], [13, 19, 25, 31], [19, 25, 31, 37], [6, 12, 18, 24], [12, 18, 24, 30], [18, 24, 30, 36],
-    [5, 11, 17, 23], [11, 17, 23, 29], [17, 23, 29, 35], [4, 10, 16, 22], [10, 16, 22, 28], [3, 9, 15, 21]
-];
+    [0, 8, 16, 24], [8, 16, 24, 32], [16, 24, 32, 40],
+    [1, 9, 17, 25], [9, 17, 25, 33], [17, 25, 33, 41],
+    [2, 10, 18, 26], [10, 18, 26, 34], [3, 11, 19, 27],
+    [7, 15, 23, 31], [15, 23, 31, 39], [14, 22, 30, 38],
+]
 
 function handleCellClick(e) {
     const cell = e.target;
@@ -47,45 +49,54 @@ function handleCellClick(e) {
     const newIndex = row * 7 + column;
 
     board[newIndex] = currentPlayer;
-    cells[newIndex].textContent = currentPlayer;
-    cells[newIndex].classList.add('taken');
-
-    if (currentPlayer === 'Red') {
-        cells[newIndex].style.color = 'red';
-        cells[newIndex].style.backgroundColor = 'red';
-    } else {
-        cells[newIndex].style.color = 'yellow';
-        cells[newIndex].style.backgroundColor = 'yellow';
-    }
+    cells[newIndex].classList.add('taken', currentPlayer.toLowerCase());
 
     if (checkWin(currentPlayer)) {
-        endGame(`${currentPlayer} wins!`);
+        endGame(currentPlayer);
     } else if (board.every(cell => cell)) {
-        endGame("It's a draw!");
+        endGame(null);
     } else {
         currentPlayer = currentPlayer === 'Red' ? 'Yellow' : 'Red';
+        turnIndicator.innerHTML = `Your Move: <span class="${currentPlayer.toLowerCase()}-text">${currentPlayer}</span>`;
+        playerName.textContent = currentPlayer;
+
+        playerCircle.classList.remove("red", "yellow");
+        playerCircle.classList.add(currentPlayer.toLowerCase());
     }
 }
 
 function checkWin(player) {
-    return winningCombinations.some(combination => combination.every(index => board[index] === currentPlayer));
+    return winningCombinations.some(combination => combination.every(index => board[index] === player));
 }
 
-function endGame(message) {
+function endGame(winner) {
     gameActive = false;
-    winnerMessage.textContent = message;
+    if (winner === "Red") {
+        winnerMessage.innerHTML = `<span class="red-text">Red</span> wins! Play Again?`;
+        winnerMessage.classList.add("win");
+    } else if (winner === "Yellow") {
+        winnerMessage.innerHTML = `<span class="yellow-text">Yellow</span> wins! Play Again?`;
+        winnerMessage.classList.add("win");
+    } else {
+        winnerMessage.textContent = "It's a draw!";
+        winnerMessage.classList.remove("win");
+    }
+    turnIndicator.textContent = "Game Over!";
 }
 
 function restartGame() {
-    gameActive = true;
     currentPlayer = 'Red';
+    gameActive = true;
     board.fill(null);
     cells.forEach(cell => {
-        cell.textContent = '';
-        cell.style.backgroundColor = 'lightgray';
-        cell.classList.remove('taken');
+        cell.classList.remove('taken', 'red', 'yellow');
     });
-    winnerMessage.textContent = '';
+    winnerMessage.textContent = "Drop discs, connect four, win!";
+    winnerMessage.classList.remove("win");
+    turnIndicator.innerHTML = `Your Move: <span class="red-text">Red</span>`;
+    playerName.textContent = "Red";
+    playerCircle.classList.remove("red", "yellow");
+    playerCircle.classList.add("red");
 }
 
 cells.forEach(cell => cell.addEventListener('click', handleCellClick));

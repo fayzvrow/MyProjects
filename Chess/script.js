@@ -1,13 +1,10 @@
-// ================
-// BOARD SETUP
-// ================
-
 const cells = document.querySelectorAll("[data-cell]");
 
-
 let board = Array(8).fill(null).map(() => Array(8).fill(null));
+let seconds = 0, minutes = 0, interval = null, running = false;
+let firstMoveMade = false, firstMoveTriggered = false;
 
-function initBoardModel() {
+function setupChessBoard() {
     board = Array(8).fill(null).map(() => Array(8).fill(null));
 
     for (let c = 0; c < 8; c++) {
@@ -22,57 +19,27 @@ function initBoardModel() {
     }
 }
 
-function renderBoard() {
+function paintBoard() {
     cells.forEach((cell, index) => {
-        cell.innerHTML = "";
-        cell.classList.remove("white-piece", "black-piece", "selected", "highlight-move", "highlight-capture");
-
         const row = Math.floor(index / 8);
         const col = index % 8;
+
+        cell.setAttribute("data-row", row);
+        cell.setAttribute("data-col", col);
+        cell.classList.remove("white-piece", "black-piece", "selected", "highlight-move", "highlight-capture");
+        cell.classList.add((row + col) % 2 === 0 ? "light-square" : "dark-square");
+
         const piece = board[row][col];
-
-        if (piece) {
-            const symbol = pieceSymbols[piece.color][piece.piece];
-            cell.innerHTML = symbol;
-            cell.classList.add(piece.color + "-piece");
-        }
+        cell.innerHTML = piece ? pieceSymbols[piece.color][piece.piece] : "";
+        if (piece) cell.classList.add(piece.color + "-piece");
     });
-
     updateTurnIndicator();
 }
 
 const pieceSymbols = {
-    white: { 
-        pawn: '&#9823;', rook: '&#9820;', knight: '&#9822;', 
-        bishop: '&#9821;', queen: '&#9819;', king: '&#9818;' 
-    },
-    black: { 
-        pawn: '&#9823;', rook: '&#9820;', knight: '&#9822;', 
-        bishop: '&#9821;', queen: '&#9819;', king: '&#9818;' 
-    }
+    white: { pawn: '&#9823;', rook: '&#9820;', knight: '&#9822;', bishop: '&#9821;', queen: '&#9819;', king: '&#9818;' },
+    black: { pawn: '&#9823;', rook: '&#9820;', knight: '&#9822;', bishop: '&#9821;', queen: '&#9819;', king: '&#9818;' } 
 };
-
-cells.forEach((cell, index) => {
-    const row = Math.floor(index / 8);
-    const col = index % 8;
-
-    cell.setAttribute("data-row", row);
-    cell.setAttribute("data-col", col);
-
-    if ((row + col) % 2 === 0) {
-        cell.classList.add("light-square");
-    } else {
-        cell.classList.add("dark-square");
-    }
-
-    cell.innerHTML = "";
-    cell.classList.remove("white-piece", "black-piece", "selected", "highlight-move", "highlight-capture");
-});
-
-
-// ================
-// GAME STATE
-// ================
 
 const turnIndicator = document.getElementById("turn-indicator");
 
@@ -91,8 +58,8 @@ function updateTurnIndicator(selectedPieceType = 'pawn') {
     turnElement.innerHTML = `<span class="${currentPlayer}-text">${playerName}</span> <span class="${currentPlayer}-piece">${pieceSymbol}</span>`;
 }
 
-initBoardModel();
-renderBoard();
+setupChessBoard();
+paintBoard();
 
 function switchTurn() {
     currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
@@ -111,11 +78,6 @@ function isEnemy(row, col, color) {
 function isEmpty(row, col) {
     return isInBounds(row, col) && !board[row][col];
 }
-
-
-// ================
-// PIECE MOVEMENT
-// ================
 
 function movePiece(fromRow, fromCol, toRow, toCol) {
     if (!isInBounds(toRow, toCol)) return false;
@@ -188,7 +150,7 @@ function movePiece(fromRow, fromCol, toRow, toCol) {
         pauseButton.innerHTML = 'Pause Timer &#9208;';
     }
 
-    renderBoard();
+    paintBoard();
     switchTurn();
     updateTurnIndicator('pawn');
     checkGameState();
@@ -317,7 +279,7 @@ function isValidKingMove(fromRow, fromCol, toRow, toCol) {
         return true;
     }
 
-    if (!king.hasMoved && rowDiff === 0 && Math.abs(colDiff) == 2) {
+    if (!king.hasMoved && rowDiff === 0 && Math.abs(colDiff) === 2) {
         const rookCol = colDiff > 0 ? 7 : 0;
         const rook = board[fromRow][rookCol];
         if (!rook || rook.piece !== 'rook' || rook.color !== king.color || rook.hasMoved) {
@@ -355,7 +317,7 @@ function showPromotionMenu(color, row, col) {
         btn.innerHTML = pieceSymbols[color][piece];
         btn.onclick = () => {
             board[row][col] = { piece, color, hasMoved: true };
-            renderBoard();
+            paintBoard();
             menu.style.display = "none";
         };
     });
@@ -602,20 +564,18 @@ undoButton.addEventListener("click", () => {
     document.querySelectorAll(".last-move").forEach(c => c.classList.remove("last-move"));
 
 
-    renderBoard();
-
+    paintBoard();
     currentPlayer = currentPlayer === "white" ? "black" : "white";
     updateTurnIndicator();
-
     gameActive = true;
     checkGameState();
 });
 
 const restartButton = document.getElementById("restart-button");
 restartButton.addEventListener("click", () => {
-    initBoardModel();
-    renderBoard();
-    currentPlayer = "white";
+    setupChessBoard();
+    paintBoard();
+    currentPlayer = 'white';
     moveHistory = [];
     enPassantTarget = null;
     gameActive = true;
@@ -629,12 +589,6 @@ restartButton.addEventListener("click", () => {
     infoPanel.style.boxShadow = "2px 2px 8px gray";
     resetStopwatch();
 });
-
-
-
-// ================
-// HANDLE CLICKS
-// ================
 
 cells.forEach((cell, index) => {
     const row = Math.floor(index / 8);
@@ -676,23 +630,9 @@ cells.forEach((cell, index) => {
     });
 });
 
-
-
-
-// ================
-// STOPWATCH
-// ================
-
 const stopwatchE1 = document.getElementById("stopwatch");
 const pauseButton = document.getElementById("pause-button");
 const resetButton = document.getElementById("reset-button");
-
-let seconds = 0;
-let minutes = 0;
-let interval = null;
-let running = false;
-let firstMoveMade = false;
-let firstMoveTriggered = false;
 
 function updateStopwatch() {
     seconds++;
